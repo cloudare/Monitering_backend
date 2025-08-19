@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">File Updates</h2>
+    <a class="btn btn-success" href="{{ url_for('file_updates_upload') }}">
+        <i class="bi bi-upload"></i> Upload New File
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-2">
+        <table class="table table-striped table-hover mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>File Name</th>
+                    <th>Created</th>
+                    <th>Updated</th>
+                    <th>Created By</th>
+                    <th>Updated By</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in rows %}
+                <tr>
+                    <td>{{ r[0] }}</td>
+                    <td>{{ r[1] }}</td>
+                    <td>{{ r[2] }}</td>
+                    <td>{{ r[3] }}</td>
+                    <td>{{ r[4] }}</td>
+                    <td>{{ r[5] }}</td>
+                    <td class="text-center">
+                        <a href="{{ url_for('file_updates_download', file_id=r[0]) }}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-download"></i> Download
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

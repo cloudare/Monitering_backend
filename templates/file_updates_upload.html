@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Upload New File</h2>
+    <form method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="version_name" class="form-label">Version Name</label>
+            <input type="text" class="form-control" id="version_name" name="version_name" required>
+        </div>
+        <div class="mb-3">
+            <label for="file" class="form-label">Choose File</label>
+            <input type="file" class="form-control" id="file" name="file" required>
+        </div>
+        <button type="submit" class="btn btn-success">
+            <i class="bi bi-upload"></i> Upload
+        </button>
+        <a href="{{ url_for('file_updates_list') }}" class="btn btn-secondary">
+            Cancel
+        </a>
+    </form>
+</div>
+{% endblock %}

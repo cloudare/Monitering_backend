@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Send Notification</h2>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-2">
+        <form id="notification-form" onsubmit="handleFormSubmit(event)">
+            <div class="mb-3">
+                <label for="device_id" class="form-label">Device ID</label>
+                <select id="device_id" name="device_id" class="form-control" required>
+                    <option value="" disabled selected>Select a device</option>
+                    {% for device_id in device_ids %}
+                    <option value="{{ device_id }}">{{ device_id }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="message" class="form-label">Message</label>
+                <input type="text" id="message" name="message" class="form-control" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Send Notification</button>
+        </form>
+
+        <p id="ack-status" class="mt-3 fw-semibold text-primary"></p>
+    </div>
+</div>
+
+<script>
+    let waitingForAck = false; // ✅ Prevent multiple ack checks
+
+    function checkAcknowledgement(deviceId) {
+        if (!waitingForAck) return;
+
+        fetch(`/api/check_acknowledgement?device_id=${deviceId}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.acknowledged) {
+                    // console.log("Acknowledged:", data.acknowledged, typeof data.acknowledged);
+                    document.getElementById("ack-status").innerText = `✅ Notification received by device: ${deviceId}`;
+                    document.getElementById("notification-form").reset(); // ✅ Clear form fields
+                    waitingForAck = false; // ✅ Stop further polling
+                } else {
+                    setTimeout(() => checkAcknowledgement(deviceId), 10000); // Keep polling every 3 sec
+                    // console.log("Acknowledged:", data.acknowledged, typeof data.acknowledged);
+                }
+            })
+            .catch(err => {
+                document.getElementById("ack-status").innerText = `⚠️ Error checking acknowledgment for device: ${deviceId}`;
+                waitingForAck = false;
+                // console.log("Acknowledged:", data.acknowledged, typeof data.acknowledged);
+            });
+    }
+
+    function handleFormSubmit(event) {
+        event.preventDefault();
+        const deviceId = document.getElementById("device_id").value;
+        const message = document.getElementById("message").value;
+
+        fetch("/send_notification", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `device_id=${encodeURIComponent(deviceId)}&message=${encodeURIComponent(message)}`
+        }).then(() => {
+            document.getElementById("ack-status").innerText = `⏳ Waiting for acknowledgment for device: ${deviceId}`;
+            waitingForAck = true; // ✅ Start acknowledgment tracking
+            checkAcknowledgement(deviceId);
+        });
+    }
+</script>
+{% endblock %}

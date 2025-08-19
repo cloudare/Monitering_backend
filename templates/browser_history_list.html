@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Browser History</h2>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-2">
+        <form class="d-flex mb-3" method="get" action="{{ url_for('browser_history_list') }}">
+            <input type="text" name="user_id" class="form-control me-2 w-30" placeholder="Filter by User ID"
+                value="{{ filter_user_id or '' }}">
+            <input type="hidden" name="page" value="1">
+            <button class="btn btn-primary" type="submit">Filter</button>
+        </form>
+        <table class="table table-striped table-hover mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>User ID</th>
+                    <th>Browser</th>
+                    <th>URL</th>
+                    <th>Visited At</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                <tr>
+                    <td>{{ row[0] }}</td>
+                    <td>{{ row[1] }}</td>
+                    <td style="word-break: break-all;"><a href="{{ row[2] }}" target="_blank">{{ row[2] }}</a></td>
+                    <td>{{ row[3] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% if total_pages > 1 %}
+        <div class="pagination-container text-center my-3">
+            <nav>
+                <ul class="pagination justify-content-center">
+                    <!-- Previous -->
+                    {% if current_page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="{{ url_for('browser_history_list', page=current_page - 1, user_id=filter_user_id) }}">
+                            Previous
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    <!-- First few pages -->
+                    {% set visible_pages = [1, 2, 3, 4] %}
+                    {% for p in visible_pages %}
+                    {% if p <= total_pages %} <li class="page-item {% if p == current_page %}active{% endif %}">
+                        <a class="page-link"
+                            href="{{ url_for('browser_history_list', page=p, user_id=filter_user_id) }}">{{ p }}</a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+
+                        <!-- Ellipsis and Next -->
+                        {% if total_pages > 4 %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                        <li class="page-item {% if current_page == total_pages %}active{% endif %}">
+                            <a class="page-link"
+                                href="{{ url_for('browser_history_list', page=total_pages, user_id=filter_user_id) }}">{{
+                                total_pages }}</a>
+                        </li>
+                        {% endif %}
+
+                        <!-- Next -->
+                        {% if current_page < total_pages %} <li class="page-item">
+                            <a class="page-link"
+                                href="{{ url_for('browser_history_list', page=current_page + 1, user_id=filter_user_id) }}">
+                                Next
+                            </a>
+                            </li>
+                            {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+{% endblock %}
