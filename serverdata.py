@@ -1,6 +1,9 @@
+import os
 # Path to wallet directory
-WALLET_PATH = r"C:/codes/monitering/new_monitering/monitering_backend/Monitering_backend/Wallet_CLOUDAREPRJ"  # Update this to your wallet folder
+# WALLET_PATH = r"C:/codes/monitering/new_monitering/monitering_backend/Monitering_backend/Wallet_CLOUDAREPRJ"  # Update this to your wallet folder
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+WALLET_PATH = os.path.join(BASE_DIR, "Wallet_CLOUDAREPRJ")
 # Wallet Password
 WALLET_PASSWORD = "Cloudare@123456"
 
