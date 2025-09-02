@@ -12,6 +12,7 @@ from math import ceil
 from collections import defaultdict
 import time
 import threading
+from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
 app.secret_key = "f82d2cf52736a67adf5c8e5eaa83426e38b44af4de6757c08a41221f4b123abc"  # Change this to a strong secret key
@@ -21,6 +22,7 @@ command_outputs = {}
 notifications_store = {}  # device_id: message
 # Store which devices have acknowledged
 acknowledged = set()
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 @app.route("/")
 def index():
@@ -1198,4 +1200,13 @@ threading.Thread(target=schedule_deletion, daemon=True).start()
 
 # ------------------ Run -------------------
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=3000)
+    from pyngrok import conf, ngrok
+    conf.get_default().auth_token = "2h8hVm4h8eU4vrlVgyCXZyYjwXG_31bxvzDPmabEAeLGHi1WS"
+    conf.get_default().check_for_updates = False
+    public_url = ngrok.connect(addr="127.0.0.1:5000", bind_tls=True)
+    print(f"Ngrok URL → {public_url}")
+    # init_db()
+    # add_user("agent2", "password2", "agent-2")
+
+    socketio.run(app, host="0.0.0.0", port=5000)
+    # app.run(debug=True, host="0.0.0.0", port=3000)
